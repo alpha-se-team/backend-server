@@ -195,4 +195,4 @@ STATIC_URL = '/static/'
 django_heroku.settings(locals())
 
 # Hackety hack hack!
-del DATABASES['default']['OPTIONS']['sslmode']
+# del DATABASES['default']['OPTIONS']['sslmode']
