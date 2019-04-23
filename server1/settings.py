@@ -30,7 +30,8 @@ if os.path.isfile(dotenv_file):
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(+z71z#u5@b(6w9snbkx!58!!6#c3ad8w*^92r^ywikr-m6geu'
+# SECRET_KEY = '(+z71z#u5@b(6w9snbkx!58!!6#c3ad8w*^92r^ywikr-m6geu'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,7 +39,6 @@ DEBUG = True
 APPEND_SLASH = False
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -152,6 +152,7 @@ WSGI_APPLICATION = 'server1.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(default='postgres://localhost', conn_max_age=600)
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -195,4 +196,5 @@ STATIC_URL = '/static/'
 django_heroku.settings(locals())
 
 # Hackety hack hack!
-# del DATABASES['default']['OPTIONS']['sslmode']
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    del DATABASES['default']['OPTIONS']['sslmode']
