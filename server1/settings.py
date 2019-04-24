@@ -13,15 +13,25 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import datetime
 
+import dj_database_url
+import dotenv
+
+import django_heroku
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Load '.env' file
+dotenv_file = os.path.join(BASE_DIR, '.env')
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(+z71z#u5@b(6w9snbkx!58!!6#c3ad8w*^92r^ywikr-m6geu'
+# SECRET_KEY = '(+z71z#u5@b(6w9snbkx!58!!6#c3ad8w*^92r^ywikr-m6geu'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,7 +39,6 @@ DEBUG = True
 APPEND_SLASH = False
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -130,13 +139,19 @@ WSGI_APPLICATION = 'server1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+    # 'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+# }
 
+# Database config
+## prod_db = dj_database_url.config(conn_max_age=600)
+## DATABASES['default'].update(prod_db)
+DATABASES = {
+    'default': dj_database_url.config(default='postgres://localhost', conn_max_age=600)
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -173,5 +188,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
+
+# Config for heroku
+django_heroku.settings(locals())
+
+# Hackety hack hack!
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    del DATABASES['default']['OPTIONS']['sslmode']
