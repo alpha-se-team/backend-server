@@ -1,1 +1,1 @@
-web: gunicorn server1.wsgi --log-file -
+web: gunicorn shirazu_app_server.wsgi --log-file -
