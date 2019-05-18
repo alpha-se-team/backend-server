@@ -9,7 +9,7 @@ def core_exception_handler(exec, context):
         'AuthenticationFailed': _handle_generic_error,
     }
     exception_class = exec.__class__.__name__
-    print(exception_class)
+    # print(exception_class)
     if exception_class in handlers:
         return handlers[exception_class](exec, context, response)
 
