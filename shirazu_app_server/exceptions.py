@@ -5,6 +5,7 @@ def core_exception_handler(exec, context):
     handlers = {
         'ValidationError': _handle_generic_error,
         'NotAuthenticated': _handle_generic_error,
+        'AuthenticationFailed': _handle_generic_error,
     }
     exception_class = exec.__class__.__name__
     print(exception_class)
