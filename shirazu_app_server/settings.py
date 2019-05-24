@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'authentication',
+    'events',
     # TODO: add pytest_django
 ]
 
