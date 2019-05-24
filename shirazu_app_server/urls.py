@@ -49,4 +49,5 @@ urlpatterns = [
 
     # path('apiv1/auth', obtain_auth_token),
     path('apiv1/', include('authentication.urls', namespace='authentication')),
+    path('apiv1/', include('events.urls', namespace='events')),
 ]
