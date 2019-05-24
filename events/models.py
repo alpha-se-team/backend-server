@@ -34,3 +34,6 @@ class Event(TimestampedMixin, models.Model):
         validators=[
             image_size_valid,
         ])  # 5 MiB limit
+
+    def __str__(self):
+        return self.title

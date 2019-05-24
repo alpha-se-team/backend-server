@@ -14,4 +14,11 @@ class EventJSONRenderer(JSONRenderer):
         #     data['events'] = errors
         #     return super(EventJSONRenderer, self).render(data)
 
+        return json.dumps({'event': data})
+
+
+class EventsJSONRenderer(JSONRenderer):
+    charset = 'utf-8'
+
+    def render(self, data, media_type=None, renderer_context=None):
         return json.dumps({'events': data})
