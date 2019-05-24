@@ -36,4 +36,5 @@ class Event(TimestampedMixin, models.Model):
         ])  # 5 MiB limit
 
     def __str__(self):
-        return self.title
+        return f"""title: {self.title}
+text: {self.text}"""
