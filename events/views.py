@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import (
     CreateAPIView,
-    RetrieveUpdateAPIView,
+    RetrieveAPIView,
+    # RetrieveUpdateAPIView,
     ListAPIView,
 )
 
@@ -32,14 +33,26 @@ class EventCreateAPIView(CreateAPIView):
     renderer_classes = (EventJSONRenderer, )
     serializer_class = CreateEventSerializer
 
+    def create(self, request, *args, **kwargs):
+        event = request.data.get('event', None)
+        if event is None:
+            raise NotFound("Event key not found.")
+        serializer = self.get_serializer(data=event)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
 
-class EventRetriveUpdateAPIView(RetrieveUpdateAPIView):
+
+class EventRetriveUpdateAPIView(RetrieveAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly, )
     renderer_classes = (EventJSONRenderer, )
     serializer_class = EventSerializer
     queryset = Event.objects.all()
 
-    def retrieve(self, request, *args, **kargs):  # refactor
+    def retrieve(self, request, *args, **kargs):
         pk = kargs.get('pk', None)
         if pk is not None:
             queryset = Event.objects.filter(id=pk)
