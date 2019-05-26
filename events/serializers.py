@@ -21,7 +21,7 @@ class CreateEventSerializer(serializers.ModelSerializer):
                                   allow_blank=False,
                                   required=True)
     text = serializers.CharField(allow_blank=True, required=False)
-    due = serializers.DateTimeField(required=False)
+    due = serializers.DateTimeField(required=True)
     # img = serializers.ImageField()
 
     class Meta:
