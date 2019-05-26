@@ -1,9 +1,7 @@
 from django.db import models
-
+from django.utils import timezone
 from django.core.exceptions import ValidationError
-
 from django.utils.translation import gettext_lazy as _
-# _ = lambda _: _
 
 
 def file_size(value, limitKB):
@@ -26,14 +24,16 @@ class TimestampedMixin(models.Model):
 
 
 class Event(TimestampedMixin, models.Model):
-    title = models.CharField('title', max_length=128)
-    text = models.TextField('content')
+    title = models.CharField(_('title'), max_length=128)
+    text = models.TextField(_('text'))
+    due = models.DateTimeField(_('due'), default=timezone.ZERO)
     img = models.ImageField(
-        'img',
+        _('img'),
         # required=False,
         validators=[
             image_size_valid,
         ])  # 5 MiB limit
 
     def __str__(self):
-        return self.title
+        return f"""title: {self.title}
+text: {self.text}"""

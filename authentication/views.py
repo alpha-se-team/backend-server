@@ -31,18 +31,6 @@ class RegistrationAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class LoginAPIView(APIView):
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
-    serializer_class = LoginSerializer
-
-    def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated, )
     renderer_classes = (UserJSONRenderer, )
@@ -59,4 +47,17 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
                                            partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LoginAPIView(APIView):
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
+    serializer_class = LoginSerializer
+
+    @swagger_auto_schema(responses={201: serializer_class})
+    def post(self, request):
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

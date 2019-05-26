@@ -34,6 +34,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, write_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
 
+    # class Meta:
+    #     model = User
+    #     fields = '__all__'
+    #     read_only_fields = ('token',)
+
     def validate(self, data):
         username = data.get('username', None)
         password = data.get('password', None)
@@ -59,6 +64,7 @@ class LoginSerializer(serializers.Serializer):
             'username': user.username,
             'token': user.token,
         }
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Handles serialization and deserialization of User objects."""
