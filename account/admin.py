@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Account, Plan
+from .models import Profile, Plan
 # Register your models here.
 
-admin.site.register(Account, Plan)
+admin.site.register(Profile)
+admin.site.register(Plan)
