@@ -14,6 +14,7 @@ class PlanJSONRenderer(JSONRenderer):
     charset = 'utf-8'
 
     def render(self, data, media_type=None, renderer_context=None):
+        print(data)
         errors = data.pop('errors', None)
 
         if errors is not None:
