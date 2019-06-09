@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 
 from rest_framework import serializers
 
+from account.serializers import ProfileSerializer
 from .models import User
 
 
@@ -75,6 +76,9 @@ class UserSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+    profile = ProfileSerializer(write_only=True)
+
+
     class Meta:
         model = User
         fields = '__all__'
@@ -83,10 +87,18 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Performs an update on a User."""
         password = validated_data.pop('password', None)
+        profile_data = validated_data.pop('profile', {})
+
         if password is not None:
             instance.set_password(password)
 
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
         instance.save()
+
+        # let's update profile
+        for (k, v) in profile_data.items():
+            setattr(instance.profile, k, v)
+
+        instance.profile.save()
         return instance

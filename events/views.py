@@ -17,6 +17,8 @@ from .renderers import (EventJSONRenderer, ListEventsJSONRenderer)
 from .serializers import EventSerializer, CreateEventSerializer
 
 from drf_yasg.utils import swagger_auto_schema
+import drf_yasg.openapi as openapi
+
 
 
 class EventsRetriveAPIView(ListAPIView):
@@ -32,6 +34,18 @@ class EventCreateAPIView(CreateAPIView):
     # authentication_classes
     renderer_classes = (EventJSONRenderer, )
     serializer_class = CreateEventSerializer
+
+
+    # @swagger_auto_schema(
+    #                      manual_parameters=[
+    #                          openapi.Parameter('serial', openapi.IN_QUERY,  type=openapi.TYPE_STRING, example="785343")
+    #                      ],
+    #                      responses={ 200:  {
+    #                          openapi.Schema(type="object",  properties={ 'device_serial': openapi.Schema(type="string", example="785343") } )
+    #                      }
+    #                      })
+    def post(self, request, *args, **kwargs):
+        return self.create(request, args, kwargs)
 
     def create(self, request, *args, **kwargs):
         event = request.data.get('event', None)

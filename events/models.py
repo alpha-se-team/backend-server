@@ -26,7 +26,7 @@ class TimestampedMixin(models.Model):
 class Event(TimestampedMixin, models.Model):
     title = models.CharField(_('title'), max_length=128)
     text = models.TextField(_('text'))
-    due = models.DateTimeField(_('due'), default=timezone.ZERO)
+    due = models.DateTimeField(_('due'), default=timezone.datetime.now)
     img = models.ImageField(
         _('img'),
         # required=False,
