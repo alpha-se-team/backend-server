@@ -12,7 +12,7 @@ class Plan(models.Model):
 
 
 def get_sentinel_plan():
-    return Plan.objects.get(title='_sentinel')[0]
+    return Plan.objects.get(title='_sentinel')
 
 
 class Profile(models.Model):
@@ -22,8 +22,9 @@ class Profile(models.Model):
         db_index=True,
     )
     active_plan = models.ForeignKey(Plan,
-                                    on_delete=models.SET(get_sentinel_plan))
-    amount_consumed = models.BigIntegerField(_('amount_consumed'))
+                                    on_delete=models.SET(get_sentinel_plan),
+                                    default=get_sentinel_plan)
+    amount_consumed = models.BigIntegerField(_('amount_consumed'), default=0)
 
     def __str__(self):
         return self.user.username

@@ -1,6 +1,8 @@
 import json
 
 from rest_framework.renderers import JSONRenderer
+from core.renderers import BasicJSONRenderer
+
 
 
 class ListPlansJSONRenderer(JSONRenderer):
@@ -10,16 +12,9 @@ class ListPlansJSONRenderer(JSONRenderer):
         return json.dumps({'plans': data})
 
 
-class PlanJSONRenderer(JSONRenderer):
-    charset = 'utf-8'
+class PlanJSONRenderer(BasicJSONRenderer):
+    object_label = 'plan'
 
-    def render(self, data, media_type=None, renderer_context=None):
-        print(data)
-        errors = data.pop('errors', None)
 
-        if errors is not None:
-            # Send the error under `plan` namespace
-            data['plan'] = errors
-            return super(PlanJSONRenderer, self).render(data)
-
-        return json.dumps({'plan': data})
+class ProfileJSONRenderer(BasicJSONRenderer):
+    object_label = 'profile'

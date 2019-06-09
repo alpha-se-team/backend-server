@@ -8,8 +8,8 @@ from django.contrib.auth.models import (
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-# from django.utils.translation import gettext_lazy as _
-_ = lambda _: _
+from django.utils.translation import gettext_lazy as _
+# _ = lambda _: _
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -59,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return _(f"{self.username}: {self.email}")
+        return f"{self.username}: {self.email}"
 
     def get_full_name(self):
         return self.username

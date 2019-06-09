@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import (
     CreateAPIView,
-    # RetrieveAPIView,
+    RetrieveAPIView,
     # RetrieveUpdateAPIView,
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
@@ -17,18 +17,54 @@ from drf_yasg.utils import swagger_auto_schema
 # import drf_yasg.openapi as openapi
 
 from .models import Plan, Profile
-from .renderers import PlanJSONRenderer, ListPlansJSONRenderer
-from .serializers import PlanSerializer, CreatePlanSerializer
+from .renderers import PlanJSONRenderer, ListPlansJSONRenderer, ProfileJSONRenderer
+from .serializers import PlanSerializer, CreatePlanSerializer, ProfileSerializer
+from .exceptions import ProfileDoesNotExist
+
+
+class ProfileRetrieveAPIView(RetrieveAPIView):
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    renderer_classes = (ProfileJSONRenderer, )
+    serializer_class = ProfileSerializer
+    queryset = ''
+    #Profile.objects.all()
+
+    # def get_object(self):
+    #     try:
+    #         obj = Profile.objects.select_related('user').get(
+    #             user__username=username
+    #         )
+    #     except Profile.DoesNotExist:
+    #         raise ProfileDoesNotExist
+    #             # May raise a permission denied
+    #     self.check_object_permissions(self.request, obj)
+
+    #     return obj
+
+    def retrieve(self, request, username, *args, **kwargs):
+        try:
+            profile = Profile.objects.select_related('user').get(
+                user__username=username
+            )
+        except Profile.DoesNotExist:
+            raise ProfileDoesNotExist
+
+        serializer = self.get_serializer_class()(profile)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class PlanRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    """C[RUD] ops for Plan"""
     permission_classes = (IsAuthenticatedOrReadOnly, )
-    renderer_classes = (PlanJSONRenderer,)
+    renderer_classes = (PlanJSONRenderer, )
     serializer_class = PlanSerializer
     queryset = Plan.objects.all()
 
 
 class PlanCreateAPIView(CreateAPIView):
+    """[C]RUD op for Plan"""
     permission_classes = (AllowAny, )
     # authentication_classes
     renderer_classes = (PlanJSONRenderer, )
@@ -51,9 +87,10 @@ class PlanCreateAPIView(CreateAPIView):
                         headers=headers)
 
 
-class PlansRetriveAPIView(ListAPIView): # LIST
-    permission_classes = (AllowAny,)
+class PlansRetriveAPIView(ListAPIView):  # LIST
+    """C[R]UD op to list all Plans"""
+    permission_classes = (AllowAny, )
     authentication_classes = (BasicAuthentication, )
-    renderer_classes = (ListPlansJSONRenderer,)
+    renderer_classes = (ListPlansJSONRenderer, )
     serializer_class = PlanSerializer
     queryset = Plan.objects.all()
