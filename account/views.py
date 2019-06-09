@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import (
     CreateAPIView,
-    RetrieveAPIView,
-    # RetrieveUpdateAPIView,
+    # RetrieveAPIView,
+    RetrieveUpdateAPIView,
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
 )
@@ -22,30 +22,41 @@ from .serializers import PlanSerializer, CreatePlanSerializer, ProfileSerializer
 from .exceptions import ProfileDoesNotExist
 
 
-class ProfileRetrieveAPIView(RetrieveAPIView):
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+class ProfileRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    permission_classes = (AllowAny, )
     renderer_classes = (ProfileJSONRenderer, )
     serializer_class = ProfileSerializer
     queryset = ''
-    #Profile.objects.all()
 
-    # def get_object(self):
-    #     try:
-    #         obj = Profile.objects.select_related('user').get(
-    #             user__username=username
-    #         )
-    #     except Profile.DoesNotExist:
-    #         raise ProfileDoesNotExist
-    #             # May raise a permission denied
-    #     self.check_object_permissions(self.request, obj)
+    def update(self, request, username, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        data = request.data.get('profile', {})
+        try:
+            data.pop("username") # UGLY HACK
+        except:
+            pass
 
-    #     return obj
+        try:
+            profile = Profile.objects.select_related('user').get(
+                user__username=username)
+        except Profile.DoesNotExist:
+            raise ProfileDoesNotExist
+
+        serializer = self.get_serializer(profile, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(profile, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the profile.
+            profile._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     def retrieve(self, request, username, *args, **kwargs):
         try:
             profile = Profile.objects.select_related('user').get(
-                user__username=username
-            )
+                user__username=username)
         except Profile.DoesNotExist:
             raise ProfileDoesNotExist
 
@@ -54,13 +65,38 @@ class ProfileRetrieveAPIView(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 class PlanRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     """C[RUD] ops for Plan"""
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (AllowAny, )
     renderer_classes = (PlanJSONRenderer, )
     serializer_class = PlanSerializer
     queryset = Plan.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        # print(args, kwargs, request.data, sep='\n')
+        data = request.data.get('plan', {})
+        partial = kwargs.pop('partial', False)
+        pk = kwargs.get('pk', None)
+        if pk is not None:
+            queryset = Plan.objects.filter(id=pk)
+            if not queryset.exists():
+                raise NotFound("No such plan found.")
+            profile = queryset.get(pk=pk)
+            # print(profile)
+            serializer = self.get_serializer(profile,
+                                             data=data,
+                                             partial=partial,
+                                             many=False)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+            if getattr(profile, '_prefetched_objects_cache', None):
+                # If 'prefetch_related' has been applied to a queryset, we need to
+                # forcibly invalidate the prefetch cache on the instance.
+                profile._prefetched_objects_cache = {}
+
+            return Response(serializer.data)
+        raise NotFound("No pk supplied.")
 
 
 class PlanCreateAPIView(CreateAPIView):

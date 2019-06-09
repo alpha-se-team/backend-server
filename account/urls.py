@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (PlanRetrieveUpdateDestroyAPIView, PlansRetriveAPIView,
-                    PlanCreateAPIView, ProfileRetrieveAPIView)
+                    PlanCreateAPIView, ProfileRetrieveUpdateAPIView)
 
 app_name = 'account'
 
@@ -10,5 +10,5 @@ urlpatterns = [
     path('plan/<int:pk>/', PlanRetrieveUpdateDestroyAPIView.as_view(), name='retrieve-update-destory plan'),
     path('plan/', PlanCreateAPIView.as_view(), name='create plan'),
 
-    path('profile/<str:username>/', ProfileRetrieveAPIView.as_view(), name='retrieve profile')
+    path('profile/<str:username>/', ProfileRetrieveUpdateAPIView.as_view(), name='retrieve-update profile')
 ]
