@@ -27,13 +27,13 @@ class Event(TimestampedMixin, models.Model):
     title = models.CharField(_('title'), max_length=128)
     text = models.TextField(_('text'))
     due = models.DateTimeField(_('due'), default=timezone.datetime.now)
-    img = models.ImageField(
+    img = models.BinaryField(
         _('img'),
+        null=True,
         # required=False,
         validators=[
             image_size_valid,
         ])  # 5 MiB limit
 
     def __str__(self):
-        return f"""title: {self.title}
-text: {self.text}"""
+        return f"title: {self.title}, text: {self.text}"
