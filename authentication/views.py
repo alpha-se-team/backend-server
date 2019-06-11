@@ -43,13 +43,19 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         user_data = request.data.get('user', {})
 
+        password = user_data.get('password')
+
         serializer_data = {
             'username' : user_data.get('username', request.user.username),
-            # 'email' : user_data.get('email', request)
-            'profile': {
 
-            }
+            # 'email' : user_data.get('email', request)
+            # 'profile': {
+
+            # }
         }
+        if password is not None:
+            serializer_data['password'] = password
+
         serializer = self.serializer_class(request.user,
                                            data=serializer_data,
                                            partial=True)
