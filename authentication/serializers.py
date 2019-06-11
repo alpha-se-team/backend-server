@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 
 from rest_framework import serializers
 
+from account.serializers import ProfileSerializer
 from .models import User
 
 
@@ -34,6 +35,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, write_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
 
+    # class Meta:
+    #     model = User
+    #     fields = '__all__'
+    #     read_only_fields = ('token',)
+
     def validate(self, data):
         username = data.get('username', None)
         password = data.get('password', None)
@@ -60,6 +66,7 @@ class LoginSerializer(serializers.Serializer):
             'token': user.token,
         }
 
+
 class UserSerializer(serializers.ModelSerializer):
     """Handles serialization and deserialization of User objects."""
 
@@ -69,6 +76,9 @@ class UserSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+    profile = ProfileSerializer(write_only=True)
+
+
     class Meta:
         model = User
         fields = '__all__'
@@ -77,10 +87,18 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Performs an update on a User."""
         password = validated_data.pop('password', None)
+        profile_data = validated_data.pop('profile', {})
+
         if password is not None:
             instance.set_password(password)
 
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
         instance.save()
+
+        # let's update profile
+        for (k, v) in profile_data.items():
+            setattr(instance.profile, k, v)
+
+        instance.profile.save()
         return instance

@@ -22,6 +22,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 # from rest_framework.authtoken.views import obtain_auth_token
 
+# from rest_framework.documentation import include_docs_urls
+
 schema_view = get_schema_view(
     openapi.Info(title="Shirazu-mockserver API",
                  default_version='v1',
@@ -46,7 +48,10 @@ urlpatterns = [
     path('redoc/',
          schema_view.with_ui('redoc', cache_timeout=0),
          name='schema-redoc'),
+    # path('docs/', include_docs_urls(title='My API title')),  # DRF doc
 
     # path('apiv1/auth', obtain_auth_token),
     path('apiv1/', include('authentication.urls', namespace='authentication')),
+    path('apiv1/', include('events.urls', namespace='events')),
+    path('apiv1/', include('account.urls', namespace='account')),
 ]
