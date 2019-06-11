@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework.serializers  import raise_errors_on_nested_writes
+from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
 
 from .models import Plan, Profile
@@ -61,5 +61,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('username', 'amount_consumed', 'plan_id')
-        read_only_fields = ('username',)
+        fields = ('username', 'amount_consumed_up', 'amount_consumed_down',
+                  'plan_id')
+        read_only_fields = ('username', )
