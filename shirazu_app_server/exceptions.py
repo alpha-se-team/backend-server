@@ -18,7 +18,7 @@ def core_exception_handler(exec, context):
 
     }
     exception_class = exec.__class__.__name__
-    print("Exception: ", exception_class)
+    # print(exception_class)
     if exception_class in handlers:
         return handlers[exception_class](exec, context, response)
     # return handlers['NotFound'](exec, context, response)
