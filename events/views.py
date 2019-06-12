@@ -18,12 +18,13 @@ from .models import Event
 from .renderers import (
     EventJSONRenderer,
     ListEventsJSONRenderer,
-    ImageJSONRenderer,
 )
 from .serializers import (EventSerializer, CreateEventSerializer,
                           ImageEventSerializer)
 
-import six
+from core.renderers import ImageJSONRenderer
+
+# import six
 
 from drf_yasg.utils import swagger_auto_schema
 import drf_yasg.openapi as openapi
