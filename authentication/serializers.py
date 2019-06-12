@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from account.serializers import ProfileSerializer
 from .models import User
+from core.fields import Base64Field
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -18,7 +19,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'#a ['email', 'username', 'password', 'token']
+        # fields = '__all__'#a ['email', 'username', 'password', 'token']
+        exclude = ('img', )
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -67,6 +69,17 @@ class LoginSerializer(serializers.Serializer):
         }
 
 
+class ImageUserSerializer(serializers.ModelSerializer):
+    img = Base64Field()  # Hackty hack hack
+    # img = serializers.ImageField()
+
+    class Meta:
+        model = User
+        fields = [
+            'img',
+        ]
+
+
 class UserSerializer(serializers.ModelSerializer):
     """Handles serialization and deserialization of User objects."""
 
@@ -81,7 +94,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('img', )
         read_only_fields = ('token',)
 
     def update(self, instance, validated_data):
