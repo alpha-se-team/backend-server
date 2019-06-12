@@ -15,7 +15,7 @@ def core_exception_handler(exec, context):
         'AuthenticationFailed': _handle_generic_error,
 
         'ProfileDoesNotExist': _handle_generic_error,
-
+        'PlanDoesNotExist': _handle_generic_error,
     }
     exception_class = exec.__class__.__name__
     # print(exception_class)

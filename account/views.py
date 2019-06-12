@@ -31,11 +31,12 @@ class ProfileRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     def update(self, request, username, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         data = request.data.get('profile', {})
-        try:
-            data.pop("username") # UGLY HACK
-        except:
-            pass
 
+        # UGLY HACK - readonly fields
+        data.pop("username", None)
+        data.pop("amount_consumed", None)
+
+        # print(data)
         try:
             profile = Profile.objects.select_related('user').get(
                 user__username=username)
