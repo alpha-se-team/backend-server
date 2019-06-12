@@ -9,6 +9,12 @@ def create_sentinel_plan(apps, schema_editor):
     Plan(title='_sentinel').save()
 
 
+def delete_sentinel_plan(apps, schema_editor):
+    Plan = apps.get_model('account', 'Plan')
+
+    Plan(title='_sentinel').delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -16,10 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='plan',
-            name='total_bandwidth',
-            field=models.BigIntegerField(default=0, verbose_name='total_bandwidth'),
-        ),
-        migrations.RunPython(create_sentinel_plan),
+        migrations.RunPython(create_sentinel_plan, delete_sentinel_plan),
     ]

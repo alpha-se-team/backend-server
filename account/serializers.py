@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from rest_framework.serializers  import raise_errors_on_nested_writes
+from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
 
 from .models import Plan, Profile
+from .exceptions import PlanDoesNotExist
 
 
 class PlanSerializer(serializers.ModelSerializer):
@@ -30,8 +31,8 @@ class CreatePlanSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
-    plan_id = serializers.IntegerField(source='active_plan.id')
+    username = serializers.CharField(source='user.username', required=False)
+    plan_id = serializers.IntegerField(source='active_plan.id', required=False)
 
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -52,7 +53,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         if active_plan_id:
             active_plan_id = active_plan_id['id']
-            plan = Plan.objects.get(pk=active_plan_id)
+            try :
+                plan = Plan.objects.get(pk=active_plan_id)
+            except:
+                raise PlanDoesNotExist()
             setattr(instance, 'active_plan', plan)
 
         instance.save()
@@ -61,5 +65,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('username', 'amount_consumed', 'plan_id')
-        read_only_fields = ('username',)
+        fields = ('username', 'amount_consumed', 'amount_consumed_up',
+                  'amount_consumed_down', 'plan_id')
+        read_only_fields = (
+            'username',
+            'amount_consumed',
+        )

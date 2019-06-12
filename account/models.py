@@ -24,7 +24,13 @@ class Profile(models.Model):
     active_plan = models.ForeignKey(Plan,
                                     on_delete=models.SET(get_sentinel_plan),
                                     default=get_sentinel_plan)
-    amount_consumed = models.BigIntegerField(_('amount_consumed'), default=0)
+    amount_consumed_down = models.BigIntegerField(_('amount_consumed_down'), default=0)
+    amount_consumed_up = models.BigIntegerField(_('amount_consumed_up'), default=0)
+
+    @property
+    def amount_consumed(self):
+        "Returns total amount of bandwith which is consumed."
+        return self.amount_consumed_down + self.amount_consumed_up
 
     def __str__(self):
         return self.user.username
