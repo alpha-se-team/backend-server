@@ -29,6 +29,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             _('unique'): _("A user with that username already exists."),
         },
     )
+    student_id = models.CharField(_('student_id') ,max_length=128, blank=True)
+    first_name = models.CharField(_('first_name'), max_length=128, blank=True)
+    last_name = models.CharField(_('last_name'), max_length=128, blank=True)
+
     email = models.EmailField(_('email address'),
                               blank=True,
                               db_index=True,
@@ -50,6 +54,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated_as'), auto_now=True)
 
+    last_connection_at = models.DateTimeField(_('last_connection_at'),
+                                              auto_now=True)
+
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
@@ -62,10 +69,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.username}: {self.email}"
 
     def get_full_name(self):
-        return self.username
+        return f"{self.first_name} {self.last_name}"
 
     def get_short_name(self):
-        return self.username
+        return self.first_name
 
     @property
     def token(self):

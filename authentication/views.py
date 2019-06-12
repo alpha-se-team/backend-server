@@ -44,6 +44,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         user_data = request.data.get('user', {})
 
         password = user_data.get('password')
+        studentid = user_data.get('studentid')
+
 
         serializer_data = {
             'username' : user_data.get('username', request.user.username),
@@ -53,6 +55,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
             # }
         }
+        if studentid is not None:
+            serializer_data['student_id'] = studentid
         if password is not None:
             serializer_data['password'] = password
 
