@@ -16,3 +16,7 @@ class BasicJSONRenderer(JSONRenderer):
             return super(BasicJSONRenderer, self).render(data)
 
         return json.dumps({self.object_label: data})
+
+
+class ImageJSONRenderer(BasicJSONRenderer):
+    object_label = 'img'

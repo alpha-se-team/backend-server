@@ -2,14 +2,26 @@ import jwt
 
 from datetime import datetime, timedelta
 
+from django.db import models
 from django.conf import settings
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import (
     AbstractBaseUser, PermissionsMixin, UserManager
 )
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.db import models
-from django.utils.translation import gettext_lazy as _
 # _ = lambda _: _
+
+
+
+def image_size_valid(val):
+    def file_size(value, limitKB):
+        limitKB *= 1024
+        if value.size > limitKB:
+            raise ValidationError(
+                f'File too large. Size should not exceed {limitKB} KiB.')
+
+    file_size(val, 5 * 1024)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -29,6 +41,19 @@ class User(AbstractBaseUser, PermissionsMixin):
             _('unique'): _("A user with that username already exists."),
         },
     )
+
+    student_id = models.CharField(_('student_id') ,max_length=128, blank=True)
+    first_name = models.CharField(_('first_name'), max_length=128, blank=True)
+    last_name = models.CharField(_('last_name'), max_length=128, blank=True)
+
+    img = models.BinaryField(
+        _('img'),
+        null=True,
+        # required=False,
+        validators=[
+            image_size_valid,
+        ])  # 5 MiB limit
+
     email = models.EmailField(_('email address'),
                               blank=True,
                               db_index=True,
@@ -50,6 +75,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated_as'), auto_now=True)
 
+    last_connection_at = models.DateTimeField(_('last_connection_at'),
+                                              auto_now=True)
+
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
@@ -62,10 +90,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.username}: {self.email}"
 
     def get_full_name(self):
-        return self.username
+        return f"{self.first_name} {self.last_name}"
 
     def get_short_name(self):
-        return self.username
+        return self.first_name
 
     @property
     def token(self):
