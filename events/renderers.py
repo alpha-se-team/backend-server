@@ -11,9 +11,5 @@ class ListEventsJSONRenderer(JSONRenderer):
         return json.dumps({'events': data})
 
 
-class ImageJSONRenderer(BasicJSONRenderer):
-    object_label = 'img'
-
-
 class EventJSONRenderer(BasicJSONRenderer):
     object_label = 'event'
