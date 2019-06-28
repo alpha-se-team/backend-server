@@ -10,5 +10,5 @@ urlpatterns = [
     path('plan/<int:pk>/', PlanRetrieveUpdateDestroyAPIView.as_view(), name='retrieve-update-destory plan'),
     path('plan/', PlanCreateAPIView.as_view(), name='create plan'),
 
-    path('profile/<str:username>/', ProfileRetrieveUpdateAPIView.as_view(), name='retrieve-update profile')
+    path('profile/', ProfileRetrieveUpdateAPIView.as_view(), name='retrieve-update profile')
 ]

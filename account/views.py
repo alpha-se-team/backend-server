@@ -3,7 +3,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import (
     CreateAPIView,
@@ -23,12 +23,14 @@ from .exceptions import ProfileDoesNotExist
 
 
 class ProfileRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (AllowAny, )
+    # permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
     renderer_classes = (ProfileJSONRenderer, )
     serializer_class = ProfileSerializer
     queryset = ''
 
-    def update(self, request, username, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
+        username = self.request.user.username
         partial = kwargs.pop('partial', False)
         data = request.data.get('profile', {})
 
@@ -54,7 +56,8 @@ class ProfileRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         return Response(serializer.data)
 
-    def retrieve(self, request, username, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
+        username = self.request.user.username
         try:
             profile = Profile.objects.select_related('user').get(
                 user__username=username)
