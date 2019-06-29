@@ -97,7 +97,7 @@ class EventCreateAPIView(CreateAPIView):
                         headers=headers)
 
 
-class EventRetrieveUpdateAPIView(RetrieveAPIView):
+class EventRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly, )
     renderer_classes = (EventJSONRenderer, )
     serializer_class = EventSerializer
