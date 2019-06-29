@@ -13,15 +13,14 @@ from rest_framework.generics import (
     RetrieveUpdateAPIView,
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
-
 )
 
 from drf_yasg.utils import swagger_auto_schema
 # import drf_yasg.openapi as openapi
 
-from .models import Plan, Profile
-from .renderers import PlanJSONRenderer, ListPlansJSONRenderer, ProfileJSONRenderer
-from .serializers import PlanSerializer, CreatePlanSerializer, ProfileSerializer
+from .models import Plan, Profile, ProfileStats
+from .renderers import PlanJSONRenderer, ListPlansJSONRenderer, ProfileJSONRenderer, ListProfileStatsJSONRenderer
+from .serializers import PlanSerializer, CreatePlanSerializer, ProfileSerializer, ProfileStatsSerializer
 from .exceptions import ProfileDoesNotExist
 
 
@@ -178,3 +177,26 @@ class PlansRetriveAPIView(ListAPIView):  # LIST
     renderer_classes = (ListPlansJSONRenderer, )
     serializer_class = PlanSerializer
     queryset = Plan.objects.all()
+
+
+class ListProfileStatsAPIView(ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    renderer_classes = (ListProfileStatsJSONRenderer, )
+    serializer_class = ProfileStatsSerializer
+    queryset = ProfileStats.objects.all()
+
+    model = ProfileStats
+
+    def get_object(self):
+        username = self.request.user.username
+        queryset = self.filter_queryset(self.get_queryset())
+
+        print(username)
+
+        try:
+            obj = self.model.filter_by_username(queryset, username)
+        except Profile.DoesNotExist:
+            raise ProfileDoesNotExist
+
+        self.check_object_permissions(self.request, obj)
+        return obj
