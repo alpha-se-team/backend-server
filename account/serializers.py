@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
 
-from .models import Plan, Profile
+from .models import Plan, Profile, ProfileStats
 from .exceptions import PlanDoesNotExist
 
 
@@ -71,3 +71,13 @@ class ProfileSerializer(serializers.ModelSerializer):
             'username',
             'amount_consumed',
         )
+
+
+class ProfileStatsSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', required=False)
+
+    class Meta:
+        model = ProfileStats
+        fields = '__all__'
+        read_only_fields = ('user', 'date', 'amount_consumed_down',
+                            'amount_consumed_up')

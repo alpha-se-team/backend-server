@@ -55,3 +55,22 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class ProfileStats(models.Model):
+    user = models.OneToOneField(
+        'authentication.User',
+        on_delete=models.CASCADE,
+        db_index=True,
+    )
+    date = models.DateField(_('date'), auto_now_add=True)
+
+    amount_consumed_down = models.BigIntegerField(_('amount_consumed_down'), default=0)
+    amount_consumed_up = models.BigIntegerField(_('amount_consumed_up'), default=0)
+
+    @classmethod
+    def filter_by_username(self, queryset, username):
+        return queryset.select_related('user').filter(user__username=username)
+
+    def __str__(self):
+        return f"{self.user.username}/{self.date} "

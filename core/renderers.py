@@ -18,5 +18,13 @@ class BasicJSONRenderer(JSONRenderer):
         return json.dumps({self.object_label: data})
 
 
+class BasicListJSONRenderer(JSONRenderer):
+    charset = 'utf-8'
+    object_label_plural = 'objects'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return json.dumps({self.object_label_plural: data})
+
+
 class ImageJSONRenderer(BasicJSONRenderer):
     object_label = 'img'
