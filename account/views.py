@@ -1,16 +1,19 @@
 # from django.shortcuts import render
 
 from rest_framework import status
+# from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import (
+    GenericAPIView,
     CreateAPIView,
     # RetrieveAPIView,
     RetrieveUpdateAPIView,
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
+
 )
 
 from drf_yasg.utils import swagger_auto_schema
@@ -20,6 +23,47 @@ from .models import Plan, Profile
 from .renderers import PlanJSONRenderer, ListPlansJSONRenderer, ProfileJSONRenderer
 from .serializers import PlanSerializer, CreatePlanSerializer, ProfileSerializer
 from .exceptions import ProfileDoesNotExist
+
+
+class GenericDeviceAPIView(GenericAPIView):
+    permission_classes = (IsAuthenticated, )
+    renderer_classes = (ProfileJSONRenderer, )
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+    def f_(self, profile):
+        pass
+
+    def get(self, request):
+        username = self.request.user.username
+        try:
+            profile = Profile.get_by_username(username)
+        except Profile.DoesNotExist:
+            raise ProfileDoesNotExist
+
+        self.f_(profile)
+        print('asdf')
+        serializer = self.get_serializer_class()(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ConnectDeviceAPIView(GenericDeviceAPIView):
+    def f_(self, profile):
+        profile.add_device()
+        print('add')
+        profile.save()
+
+class DisconnectDeviceAPIView(GenericDeviceAPIView):
+    def f_(self, profile):
+        profile.remove_device()
+        print('remove')
+        profile.save()
+
+class DisconnectAllDevicesAPIView(GenericDeviceAPIView):
+    def f_(self, profile):
+        profile.remove_all_devices()
+        print('remove-all')
+        profile.save()
 
 
 class ProfileRetrieveUpdateAPIView(RetrieveUpdateAPIView):

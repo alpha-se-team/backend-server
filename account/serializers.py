@@ -66,7 +66,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('username', 'amount_consumed', 'amount_consumed_up',
-                  'amount_consumed_down', 'plan_id')
+                  'amount_consumed_down', 'plan_id', 'connected_devices')
         read_only_fields = (
             'username',
             'amount_consumed',
