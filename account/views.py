@@ -41,7 +41,6 @@ class GenericDeviceAPIView(GenericAPIView):
             raise ProfileDoesNotExist
 
         self.f_(profile)
-        print('asdf')
         serializer = self.get_serializer_class()(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -49,19 +48,16 @@ class GenericDeviceAPIView(GenericAPIView):
 class ConnectDeviceAPIView(GenericDeviceAPIView):
     def f_(self, profile):
         profile.add_device()
-        print('add')
         profile.save()
 
 class DisconnectDeviceAPIView(GenericDeviceAPIView):
     def f_(self, profile):
         profile.remove_device()
-        print('remove')
         profile.save()
 
 class DisconnectAllDevicesAPIView(GenericDeviceAPIView):
     def f_(self, profile):
         profile.remove_all_devices()
-        print('remove-all')
         profile.save()
 
 
@@ -81,7 +77,6 @@ class ProfileRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         data.pop("username", None)
         data.pop("amount_consumed", None)
 
-        # print(data)
         try:
             profile = Profile.objects.select_related('user').get(
                 user__username=username)
@@ -190,8 +185,6 @@ class ListProfileStatsAPIView(ListAPIView):
     def get_object(self):
         username = self.request.user.username
         queryset = self.filter_queryset(self.get_queryset())
-
-        print(username)
 
         try:
             obj = self.model.filter_by_username(queryset, username)
